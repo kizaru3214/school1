@@ -30,26 +30,34 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const { edpcode, start_time, end_time, room, teacherid, subjid } = req.body;
-    if (!edpcode || !start_time || !end_time || !room || !teacherid || !subjid) {
+    const { start_time, end_time, room, teacherid, subjid } = req.body;
+    if (!start_time || !end_time || !room || !teacherid || !subjid) {
         return res.status(400).json({ message: "All fields are required." });
     }
-    const values = [edpcode, start_time, end_time, room, teacherid, subjid];
-    let sql = "INSERT INTO `" + table + "`(`edpcode`,`start_time`,`end_time`,`room`,`teacherid`,`subjid`) VALUES(?,?,?,?,?,?)";
-    db.query(sql, values, (err, rows) => {
+
+    let sqlGet = "SELECT MAX(CAST(edpcode AS UNSIGNED)) as lastcode FROM `suboffered`";
+    db.query(sqlGet, (err, rows) => {
         if (err) return res.status(500).json(err);
-        return res.status(200).json(rows);
+        let lastcode = rows[0].lastcode || 0;
+        let edpcode = lastcode + 1;
+
+        const values = [edpcode, start_time, end_time, room, teacherid, subjid];
+        let sql = "INSERT INTO `suboffered`(`edpcode`,`start_time`,`end_time`,`room`,`teacherid`,`subjid`) VALUES(?,?,?,?,?,?)";
+        db.query(sql, values, (err, rows) => {
+            if (err) return res.status(500).json(err);
+            return res.status(200).json(rows);
+        });
     });
 });
 
 router.put('/:id', (req, res) => {
     const id = req.params.id;
-    const { edpcode, start_time, end_time, room, teacherid, subjid } = req.body;
-    if (!edpcode || !start_time || !end_time || !room || !teacherid || !subjid) {
+    const { start_time, end_time, room, teacherid, subjid } = req.body;
+    if (!start_time || !end_time || !room || !teacherid || !subjid) {
         return res.status(400).json({ message: "All fields are required." });
     }
-    const values = [edpcode, start_time, end_time, room, teacherid, subjid, id];
-    let sql = "UPDATE `" + table + "` SET `edpcode`=?,`start_time`=?,`end_time`=?,`room`=?,`teacherid`=?,`subjid`=? WHERE `subjoffid`=?";
+    const values = [start_time, end_time, room, teacherid, subjid, id];
+    let sql = "UPDATE `" + table + "` SET `start_time`=?,`end_time`=?,`room`=?,`teacherid`=?,`subjid`=? WHERE `subjoffid`=?";
     db.query(sql, values, (err, rows) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json(rows);

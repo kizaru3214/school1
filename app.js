@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use('/subject', subject);
 app.use('/teacher', teacher);
-app.use('/edp', suboffered);
+app.use('/suboffered', suboffered);
 
 app.get("/",(req,res)=>{
     res.send("hello world");
