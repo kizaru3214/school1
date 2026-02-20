@@ -1,0 +1,4 @@
+echo "Insomnia.Core-12.3.1.exe" > .gitignore
+echo "dia-setup-0.97.2-2-unsigned.exe" >> .gitignore
+echo "node_modules/" >> .gitignore
+echo ".env" >> .gitignore
